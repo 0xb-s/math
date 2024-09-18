@@ -22,6 +22,10 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, String> {
                 tokens.push(Token::Minus);
                 idx += 1;
             }
+            '^' => {
+                tokens.push(Token::Pow);
+                idx += 1;
+            }
             '*' => {
                 tokens.push(Token::Star);
                 idx += 1;

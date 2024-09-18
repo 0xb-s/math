@@ -1,5 +1,3 @@
-// src/parser.rs
-
 use crate::ast::Expr;
 use crate::token::Token;
 
@@ -43,24 +41,24 @@ impl Parser {
     }
 
     fn parse_multiplication(&mut self) -> Result<Expr, String> {
-        let mut expr = self.parse_factor()?;
+        let mut expr = self.parse_exponentiation()?;
 
         loop {
             if let Some(token) = self.current_token() {
                 match token {
                     Token::Star => {
                         self.advance();
-                        let rhs = self.parse_factor()?;
+                        let rhs = self.parse_exponentiation()?;
                         expr = Expr::Mul(Box::new(expr), Box::new(rhs));
                     }
                     Token::Slash => {
                         self.advance();
-                        let rhs = self.parse_factor()?;
+                        let rhs = self.parse_exponentiation()?;
                         expr = Expr::Div(Box::new(expr), Box::new(rhs));
                     }
-                    // Handle implicit multiplication
+                    // Handle implicit multiplication (e.g., 2x, (a)(b))
                     Token::Number(_) | Token::Variable(_) | Token::LParen => {
-                        let rhs = self.parse_factor()?;
+                        let rhs = self.parse_exponentiation()?;
                         expr = Expr::Mul(Box::new(expr), Box::new(rhs));
                     }
                     _ => break,
@@ -71,6 +69,21 @@ impl Parser {
         }
 
         Ok(expr)
+    }
+
+    fn parse_exponentiation(&mut self) -> Result<Expr, String> {
+        let expr = self.parse_factor()?;
+        self.parse_exponentiation_rhs(expr)
+    }
+
+    fn parse_exponentiation_rhs(&mut self, left: Expr) -> Result<Expr, String> {
+        if let Some(Token::Pow) = self.current_token() {
+            self.advance();
+            let right = self.parse_exponentiation()?;
+            Ok(Expr::Pow(Box::new(left), Box::new(right)))
+        } else {
+            Ok(left)
+        }
     }
 
     fn parse_factor(&mut self) -> Result<Expr, String> {
