@@ -10,3 +10,5 @@ edition = "2021"
 
 [[example]]
 name = "foo"
+[[example]]
+name = "bar"
