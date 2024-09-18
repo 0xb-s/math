@@ -54,3 +54,6 @@ You can run the example using the following command:
 ```bash
 cargo run --example foo
 ```
+```bash
+cargo run --example bar
+``` 
