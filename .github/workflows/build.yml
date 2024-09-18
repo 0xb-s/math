@@ -1,0 +1,30 @@
+name: Rust Build
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout Code
+      - uses: actions-rs/toolchain@v1
+        name: Install Rust Toolchain
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Compile Project
+        run: cargo build --verbose
